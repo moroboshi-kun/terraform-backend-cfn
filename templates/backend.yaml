@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Terraform backend infrastructure (S3 + DynamoDB)"
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: "Globally unique S3 bucket name for Terraform state"
+
+  LockTableName:
+    Type: String
+    Default: "terraform-locks"
+    Description: "DynamoDB table name for Terraform state locking"
+
+Resources:
+
+  # -------------------------------------------
+  # S3 Bucket
+  # -------------------------------------------
+
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref BucketName
+
+      VersioningConfiguration:
+        Status: Enabled
+
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+      Tags:
+        - Key: Purpose
+          Value: terraform-backend
+        - Key: ManagedBy
+          Value: terraform
+
+  # -------------------------------------------
+  # DynamoDB Table
+  # -------------------------------------------
+
+  TerraformLockTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Ref LockTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: LockID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: LockID
+          KeyType: HASH
+
+      SSESpecification:
+        SSEEnabled: true
+
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+      Tags:
+        - Key: Purpose
+          Value: terraform-backend
+        - Key: ManagedBy
+          Value: terraform
+
+Outputs:
+  StateBucketName:
+    Value: !Ref TerraformStateBucket
+
+  LockTableName:
+    Value: !Ref TerraformLockTable
+
