@@ -1,4 +1,4 @@
-# terraform-backend-aws
+# terraform-backend-cfn
 
 CloudFormation stack for provisioning a production-ready Terraform remote backend on AWS.
 
