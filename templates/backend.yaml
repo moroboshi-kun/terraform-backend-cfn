@@ -11,6 +11,18 @@ Parameters:
     Default: "terraform-locks"
     Description: "DynamoDB table name for Terraform state locking"
 
+  Owner:
+    Type: String
+    Description: "Team or individual owning this resource"
+
+  Environment:
+    Type: String
+    Description: "Deployment environment (e.g. dev, stage, prod)"
+
+  CostCenter:
+    Type: String
+    Description: "Cost center for billing attribution"
+
 Resources:
 
   # -------------------------------------------
@@ -39,10 +51,16 @@ Resources:
               SSEAlgorithm: AES256
 
       Tags:
-        - Key: Purpose
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: Application
           Value: terraform-backend
+        - Key: Environment
+          Value: !Ref Environment
         - Key: ManagedBy
-          Value: terraform
+          Value: cloudformation
+        - Key: CostCenter
+          Value: !Ref CostCenter
 
   # -------------------------------------------
   # DynamoDB Table
@@ -69,10 +87,16 @@ Resources:
         PointInTimeRecoveryEnabled: true
 
       Tags:
-        - Key: Purpose
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: Application
           Value: terraform-backend
+        - Key: Environment
+          Value: !Ref Environment
         - Key: ManagedBy
-          Value: terraform
+          Value: cloudformation
+        - Key: CostCenter
+          Value: !Ref CostCenter
 
 Outputs:
   StateBucketName:

@@ -16,5 +16,7 @@ aws cloudformation deploy \
   --region "$AWS_REGION" \
   --parameter-overrides \
     BucketName="$BUCKET_NAME" \
-    LockTableName="$LOCK_TABLE_NAME"
-
+    LockTableName="$LOCK_TABLE_NAME" \
+    Owner="$OWNER" \
+    Environment="$ENVIRONMENT" \
+    CostCenter="$COST_CENTER"
