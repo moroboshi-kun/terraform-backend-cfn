@@ -1,0 +1,53 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CloudFormationStackManagement",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateStack",
+        "cloudformation:UpdateStack",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:GetTemplate",
+        "cloudformation:CreateChangeSet",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:ExecuteChangeSet",
+        "cloudformation:DeleteChangeSet"
+      ],
+      "Resource": "arn:aws:cloudformation:*:*:stack/terraform-backend-*/*"
+    },
+    {
+      "Sid": "S3BucketProvisioning",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:PutBucketVersioning",
+        "s3:PutBucketEncryption",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:PutBucketTagging",
+        "s3:GetBucketVersioning",
+        "s3:GetBucketEncryption",
+        "s3:GetBucketPublicAccessBlock",
+        "s3:GetBucketTagging",
+        "s3:GetBucketPolicy",
+        "s3:ListBucket"
+      ],
+      "Resource": "arn:aws:s3:::my-org-terraform-state-*"
+    },
+    {
+      "Sid": "DynamoDBTableProvisioning",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:UpdateTable",
+        "dynamodb:DescribeTable",
+        "dynamodb:DescribeContinuousBackups",
+        "dynamodb:UpdateContinuousBackups",
+        "dynamodb:TagResource",
+        "dynamodb:ListTagsOfResource"
+      ],
+      "Resource": "arn:aws:dynamodb:*:*:table/terraform-locks-*"
+    }
+  ]
+}

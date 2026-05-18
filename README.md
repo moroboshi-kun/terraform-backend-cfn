@@ -44,6 +44,9 @@ terraform-backend-aws/
 ├── environments/
 │   ├── dev.env
 │   └── prod.env
+├── iam/
+│   ├── deploy-policy.json
+│   └── terraform-backend-access-policy.json
 ├── scripts/
 │   └── deploy.sh
 └── README.md
@@ -51,6 +54,8 @@ terraform-backend-aws/
 
 - `templates/backend.yaml` – CloudFormation template defining backend infrastructure
 - `environments/*.env` – Environment-specific configuration values
+- `iam/deploy-policy.json` – Minimum IAM permissions to deploy the stack
+- `iam/terraform-backend-access-policy.json` – Minimum IAM permissions for Terraform to use the backend
 - `scripts/deploy.sh` – CLI wrapper for deploying the stack
 
 ---
@@ -110,6 +115,33 @@ terraform {
 ```
 
 Each Terraform project must use a unique `key` within the bucket.
+
+---
+
+# IAM Policies
+
+This repository includes minimum-privilege IAM policy documents in the `iam/` directory.
+
+## Deploy Policy (`iam/deploy-policy.json`)
+
+Grants permissions to create and update the CloudFormation stack and the resources it manages.
+Attach this to the IAM role or user that runs `scripts/deploy.sh`.
+
+Scoped to:
+- CloudFormation stacks matching `terraform-backend-*`
+- S3 buckets matching `my-org-terraform-state-*`
+- DynamoDB tables matching `terraform-locks-*`
+
+Adjust the resource ARN patterns to match your naming convention.
+
+## Terraform Backend Access Policy (`iam/terraform-backend-access-policy.json`)
+
+Grants permissions for Terraform to read/write state and acquire/release locks.
+Attach this to any IAM role that runs `terraform init`, `plan`, or `apply` against this backend.
+
+Scoped to:
+- S3 bucket and objects matching `my-org-terraform-state-*`
+- DynamoDB tables matching `terraform-locks-*`
 
 ---
 
